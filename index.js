@@ -1,7 +1,11 @@
 function createElement(parentEle, props, childEle) {
-  let parentElement = document.createElement(parentEle);
-  parentElement.innerHTML = childEle;
-  return parentElement;
+  if (typeof parentEle === "function") {
+    return parentEle();
+  } else {
+    let parentElement = document.createElement(parentEle);
+    parentElement.innerHTML = childEle;
+    return parentElement;
+  }
 }
 function render(insertEle, rootEle) {
   rootEle.appendChild(insertEle);
@@ -13,5 +17,8 @@ ReactDOM = {
   render
 };
 
-const helloWorld = React.createElement("div", null, `Hello World`);
+const Hello = function() {
+  return React.createElement("div", null, `Hello Version2.0`);
+};
+const helloWorld = React.createElement(Hello, null, null);
 ReactDOM.render(helloWorld, document.getElementById("root"));
