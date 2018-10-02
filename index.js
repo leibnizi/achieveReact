@@ -38,12 +38,19 @@
 }
   */
 
+let rootElement, rootReactElement;
+// React基础组件库
 class Component {
   constructor(props) {
     this.props = props;
   }
+  setState(state) {
+    this.state = state;
+    reRender();
+  }
 }
 
+// React.createElement
 function createElement(parentEle, props, ...childEles) {
   if (
     typeof parentEle === "function" &&
@@ -51,16 +58,19 @@ function createElement(parentEle, props, ...childEles) {
   ) {
     // 当为类组件时
     let component = new parentEle(props);
-    return component.render();
+    return component;
   } else if (typeof parentEle === "function") {
     // 当为函数组件时
     return parentEle(props);
   } else {
     // 当为html标签组件时
     let parentElement = document.createElement(parentEle);
-    Object.keys(props).forEach(key => {
+    Object.keys(props || {}).forEach(key => {
       switch (key) {
         case "onclick":
+          parentElement.addEventListener("click", props[key]);
+          break;
+        case "onClick":
           parentElement.addEventListener("click", props[key]);
           break;
         default:
@@ -77,9 +87,17 @@ function createElement(parentEle, props, ...childEles) {
     return parentElement;
   }
 }
-
 function render(insertEle, rootEle) {
-  rootEle.appendChild(insertEle);
+  rootElement = rootEle;
+  rootReactElement = insertEle;
+  rootEle.appendChild(insertEle.render());
+}
+
+function reRender() {
+  while (rootElement.hasChildNodes()) {
+    rootElement.removeChild(rootElement.lastChild);
+  }
+  ReactDOM.render(rootReactElement, rootElement);
 }
 
 React = {
@@ -138,21 +156,35 @@ const parent = React.createElement(
 // const helloWorld = React.createElement(Hello, { name: "文字" }, null);
 // ReactDOM.render(helloWorld, document.getElementById("root"));
 
-class MyButton extends React.Component {
+class Counter extends React.Component {
   constructor(props) {
     super(props);
+    this.state = { value: 0 };
+  }
+  onPlusClick() {
+    this.setState({ value: this.state.value + 1 });
+  }
+  onMinusClick() {
+    this.setState({ value: this.state.value - 1 });
   }
   render() {
     return React.createElement(
-      "button",
-      { onclick: this.props.onClick },
-      `Click me`
+      "div",
+      null,
+      React.createElement("div", null, `The Famous Dan Abramov's Counter`),
+      React.createElement("div", null, `${this.state.value}`),
+      React.createElement(
+        "button",
+        { onClick: this.onPlusClick.bind(this) },
+        "+"
+      ),
+      React.createElement(
+        "button",
+        { onClick: this.onMinusClick.bind(this) },
+        "-"
+      )
     );
   }
 }
-const myBtn = React.createElement(
-  MyButton,
-  { onClick: () => alert("点击事件触发") },
-  null
-);
-ReactDOM.render(myBtn, document.getElementById("root"));
+let myCounter = React.createElement(Counter, null, null);
+ReactDOM.render(myCounter, document.getElementById("root"));
