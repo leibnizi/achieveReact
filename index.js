@@ -46,7 +46,7 @@ function createElement(parentEle, props, ...childEles) {
     let component = new parentEle();
     return component.render();
   } else if (typeof parentEle === "function") {
-    return parentEle();
+    return parentEle(props);
   } else {
     let parentElement = document.createElement(parentEle);
     childEles.forEach(child => {
@@ -101,11 +101,17 @@ const parent = React.createElement(
 );
  */
 
-class Hello {
-  render() {
-    return React.createElement("div", null, `版本四，类组件的实现`);
-  }
-}
-const helloWorld = React.createElement(Hello, null, null);
+// class Hello {
+//   render() {
+//     return React.createElement("div", null, `版本四，类组件的实现`);
+//   }
+// }
+// const helloWorld = React.createElement(Hello, null, null);
+
+const Hello = ({ name }) => {
+  return React.createElement("div", null, `这是 ${name}`);
+};
+
+const helloWorld = React.createElement(Hello, { name: "wedge" }, null);
 
 ReactDOM.render(helloWorld, document.getElementById("root"));
