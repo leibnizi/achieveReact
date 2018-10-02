@@ -58,6 +58,15 @@ function createElement(parentEle, props, ...childEles) {
   } else {
     // 当为html标签组件时
     let parentElement = document.createElement(parentEle);
+    Object.keys(props).forEach(key => {
+      switch (key) {
+        case "onclick":
+          parentElement.addEventListener("click", props[key]);
+          break;
+        default:
+          break;
+      }
+    });
     childEles.forEach(child => {
       if (typeof child === "string") {
         parentElement.innerHTML += child;
@@ -118,13 +127,32 @@ const parent = React.createElement(
 // }
 // const helloWorld = React.createElement(Hello, null, null);
 
-class Hello extends React.Component {
+// class Hello extends React.Component {
+//   constructor(props) {
+//     super(props);
+//   }
+//   render() {
+//     return React.createElement("div", null, `Hello ${this.props.name}`);
+//   }
+// }
+// const helloWorld = React.createElement(Hello, { name: "文字" }, null);
+// ReactDOM.render(helloWorld, document.getElementById("root"));
+
+class MyButton extends React.Component {
   constructor(props) {
     super(props);
   }
   render() {
-    return React.createElement("div", null, `Hello ${this.props.name}`);
+    return React.createElement(
+      "button",
+      { onclick: this.props.onClick },
+      `Click me`
+    );
   }
 }
-const helloWorld = React.createElement(Hello, { name: "文字" }, null);
-ReactDOM.render(helloWorld, document.getElementById("root"));
+const myBtn = React.createElement(
+  MyButton,
+  { onClick: () => alert("点击事件触发") },
+  null
+);
+ReactDOM.render(myBtn, document.getElementById("root"));
