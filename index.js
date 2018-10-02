@@ -38,16 +38,25 @@
 }
   */
 
+class Component {
+  constructor(props) {
+    this.props = props;
+  }
+}
+
 function createElement(parentEle, props, ...childEles) {
   if (
     typeof parentEle === "function" &&
     /^\s*class\s+/.test(parentEle.toString())
   ) {
-    let component = new parentEle();
+    // 当为类组件时
+    let component = new parentEle(props);
     return component.render();
   } else if (typeof parentEle === "function") {
+    // 当为函数组件时
     return parentEle(props);
   } else {
+    // 当为html标签组件时
     let parentElement = document.createElement(parentEle);
     childEles.forEach(child => {
       if (typeof child === "string") {
@@ -65,7 +74,8 @@ function render(insertEle, rootEle) {
 }
 
 React = {
-  createElement
+  createElement,
+  Component
 };
 ReactDOM = {
   render
@@ -108,10 +118,13 @@ const parent = React.createElement(
 // }
 // const helloWorld = React.createElement(Hello, null, null);
 
-const Hello = ({ name }) => {
-  return React.createElement("div", null, `这是 ${name}`);
-};
-
-const helloWorld = React.createElement(Hello, { name: "wedge" }, null);
-
+class Hello extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return React.createElement("div", null, `Hello ${this.props.name}`);
+  }
+}
+const helloWorld = React.createElement(Hello, { name: "文字" }, null);
 ReactDOM.render(helloWorld, document.getElementById("root"));
